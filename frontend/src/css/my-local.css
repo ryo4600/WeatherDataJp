@@ -1,0 +1,34 @@
+#root {
+	display: flex;
+	min-height: 100vh;
+	flex-direction: column;
+}
+
+.container {
+	flex: 1;
+}
+
+footer {
+	text-align: center;
+	font-size: 85%;
+	padding-bottom: 20px;
+	padding-top: 20px;  
+}
+
+.row:before,
+.row:after,
+.group:before,
+.group:after {
+  content: "";
+  display: table;
+}
+
+.row:after,
+.group:after {
+  clear: both;
+}
+
+.row,
+.group {
+  zoom: 1;
+}

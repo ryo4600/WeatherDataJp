@@ -1,11 +1,15 @@
 const path = require("path");
 const express = require("express");
+const cors = require('cors')
 
 const HTTP_PORT = 9000;
 
 const db = require("./utils/db_handler");
+const {forwardGeocoding, reverseGeocoding} = require("./utils/geocode");
+const forecast = require("./utils/forecast");
 
 const app = express();
+app.use(cors())
 
 const publicPath = path.join(__dirname, "../public");
 app.use(express.static(publicPath));
@@ -64,6 +68,61 @@ app.get("/weather/byweek/:station_code", async (req, res) => {
 		return res.status(500).send(err);
 	}
 });
+
+//---------------------------------------------------------
+// GET: Get the latitude, longitude from place name
+//---------------------------------------------------------
+app.get("/geolocation", async (req, res) => {
+	if (!req.query.address) {
+		return res.status(400).send({
+			error: "you must provide an address",
+		});
+	}
+
+	try {
+		res.json(await forwardGeocoding(req.query.address, process.env.GEOCODE_TOKEN))
+	}
+	catch(err){
+		return res.status(500).send(err);
+	}
+})
+
+//---------------------------------------------------------
+// GET: Get the placename from latitude, longitude
+//---------------------------------------------------------
+app.get("/placelookup", async (req, res) =>{
+	if (!req.query.latitude || !req.query.longitude) {
+		return res.status(400).send({
+			error: "you must provide latitude and longitude",
+		});
+	}
+
+	try {
+		res.json(await reverseGeocoding(req.query.latitude, req.query.longitude, process.env.GEOCODE_TOKEN))
+	}
+	catch(err){
+		return res.status(500).send(err);
+	}
+
+})
+
+//---------------------------------------------------------
+// GET: Get the weather forecast from latitude and longitude
+//---------------------------------------------------------
+app.get("/weather/current", async(req, res) => {
+	try {
+		const data = await forecast(req.query.longitude, req.query.latitude, process.env.FORECAST_TOKEN)
+		res.json(data)
+			// res.send({
+			// 	address: req.query.address,
+			// 	forecast: forecastData,
+			// 	location,
+			// });
+		//});
+	} catch(err) {
+		return res.status(500).send("failed to get the forecast. " + err)
+	}
+})
 
 app.listen(HTTP_PORT, () => {
 	console.log(`Server is up on port ${HTTP_PORT}.`);

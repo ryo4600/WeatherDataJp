@@ -10,7 +10,7 @@ const db = new sqlite3.Database(
 //---------------------------------------------------------
 const getStations = async () => {
 	const query =
-		"SELECT stations.*, areas.name as area_name FROM stations JOIN areas ON stations.area_id = areas.code";
+		"SELECT stations.*, areas.name as area_name FROM stations JOIN areas ON stations.area_id = areas.code WHERE station_type=0";
 	return await db_all(query);
 };
 
@@ -64,7 +64,7 @@ const getDataByWeek = async (station_code, year, month, day, years) => {
 //---------------------------------------------------------
 // Utility function to make sqlite3 awaitable
 //---------------------------------------------------------
-async function db_all(query) {
+const db_all = async (query) => {
 	return new Promise((resolve, reject) => {
 		db.all(query, (err, rows) => {
 			if (err) {

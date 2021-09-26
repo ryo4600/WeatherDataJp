@@ -106,3 +106,5 @@ dist
 # my rules
 server/package-lock.json
 server/src/data
+.env
+frontend/package-lock.json
