@@ -5,6 +5,8 @@
 }
 
 .container {
+	margin-left: 20px;
+	margin-right: 20px;
 	flex: 1;
 }
 
@@ -12,23 +14,97 @@ footer {
 	text-align: center;
 	font-size: 85%;
 	padding-bottom: 20px;
-	padding-top: 20px;  
+	padding-top: 20px;
 }
 
 .row:before,
 .row:after,
 .group:before,
 .group:after {
-  content: "";
-  display: table;
+	content: "";
+	display: table;
 }
 
 .row:after,
 .group:after {
-  clear: both;
+	clear: both;
 }
 
 .row,
 .group {
-  zoom: 1;
+	zoom: 1;
+}
+
+.inputArea {
+	display: flex;
+	padding: 0 10px;
+	box-sizing: border-box;
+	min-width: 50%;
+	flex-wrap: wrap;
+}
+
+.flex-wrap {
+	display: -webkit-flex;
+	display: -moz-flex;
+	display: -ms-flex;
+	display: -o-flex;
+	display: flex;
+	flex-wrap: wrap;
+}
+
+.center-text {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+.weatherData th {
+	width: 10%;
+	text-align: center;
+}
+
+.weatherData td {
+	text-align: center;
+}
+
+.summaryRow {
+	text-align: center;
+}
+
+.summaryHeader, .forecastHeader {
+	text-align: center;
+	background-color: darkcyan;
+	color: white;
+}
+
+.forecastTitleCol {
+	text-align: center;	
+}
+
+.forecastTable th {
+	text-align: center;
+	background-color: darkslategrey;
+	color: white;
+}
+
+.forecastTable .days3 {
+	width: 25%;
+}
+
+.forecastTable td {
+	text-align: center;
+}
+
+.forecastTable .categoryTitle {
+	font-weight: bold;
+	vertical-align: middle;
+	background-color: #cec8;
+}
+
+.days7 th {
+	background-color: darkslateblue;
+}
+
+.days7 .categoryTitle {
+	background-color: #ccf4;
 }

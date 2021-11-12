@@ -6,6 +6,7 @@ import {
 } from "react-bootstrap";
 import { LinkContainer } from "react-router-bootstrap";
 
+import configData from '../config.json'
 import styles from './Header.module.css'
 
 //-----------------------------------------------------------------------------
@@ -19,21 +20,24 @@ function Header(props) {
 	return (
 		<header {...props}>
 			<Navbar bg="primary" variant="dark" expand="lg" collapseOnSelect>
-				<Container className='menu-root'>
-					<LinkContainer to="/">
-						<Navbar.Brand> いつもの天気 </Navbar.Brand>
+				<Container className="px-0">
+					<LinkContainer to="/home" className={styles.pageTitle}>
+						<Navbar.Brand> {configData.TITLE} </Navbar.Brand>
 					</LinkContainer>
 					<Navbar.Toggle aria-controls="responsive-navbar-nav" />
 					<Navbar.Collapse>
 						<Nav className={`mr-auto ${styles.menuItems}`}>
+							<LinkContainer to="/home">
+								<Nav.Link> ホーム </Nav.Link>
+							</LinkContainer>
 							<LinkContainer to="/byday">
-								<Nav.Link> 日でみる </Nav.Link>
+								<Nav.Link> 日データ </Nav.Link>
 							</LinkContainer>
 							<LinkContainer to="/byweek">
-								<Nav.Link> 週でみる </Nav.Link>
+								<Nav.Link> 週データ </Nav.Link>
 							</LinkContainer>
 							<LinkContainer to="/credit">
-								<Nav.Link> 情報ソース </Nav.Link>
+								<Nav.Link> データについて </Nav.Link>
 							</LinkContainer>
 						</Nav>
 						<Nav>

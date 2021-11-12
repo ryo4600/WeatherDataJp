@@ -1,23 +1,23 @@
-import React, {useEffect, useState} from 'react'
+import React, {useContext} from "react";
+import { Container } from "react-bootstrap";
+
+import configData from "../config.json";
+import Forecast from "../components/Forecast";
+import LocationContext from "../store/LocationContext";
 
 //-----------------------------------------------------------------------------
 // SCREEN: Home
 //-----------------------------------------------------------------------------
 function HomeScreen() {
+	const { station } = useContext(LocationContext);
 
-	useEffect(() => {
-		document.title="いつもの天気（ホーム)"
-		return () => {
-			//cleanup
-		}
-	}, [])
-
+	document.title = `${configData.TITLE}（ホーム)`;
 
 	return (
-		<div>
-			Homee
-		</div>
-	)
+		<Container>
+			<Forecast station={station} />
+		</Container>
+	);
 }
 
-export default HomeScreen
+export default HomeScreen;

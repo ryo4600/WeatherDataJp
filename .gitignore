@@ -108,3 +108,5 @@ server/package-lock.json
 server/src/data
 .env
 frontend/package-lock.json
+server/config/dev.env
+*.env

@@ -1,19 +1,25 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-import './index.css';
-import App from './App';
-import reportWebVitals from './reportWebVitals';
+import React from "react";
+import ReactDOM from "react-dom";
+import "./index.css";
+import App from "./App";
+import reportWebVitals from "./reportWebVitals";
 
-import {StatusContextProvider} from './store/StatusContext'
-import { BrowserRouter } from 'react-router-dom';
+import { LocationContextProvider } from "./store/LocationContext";
+import { WeatherContextProvider } from "./store/WeatherContext";
+import { StatusContextProvider } from "./store/StatusContext";
+import { BrowserRouter } from "react-router-dom";
 
 ReactDOM.render(
-  <StatusContextProvider>
-    <BrowserRouter>
-      <App />
-    </BrowserRouter>
-  </StatusContextProvider>,
-  document.getElementById('root')
+	<LocationContextProvider>
+		<WeatherContextProvider>
+			<StatusContextProvider>
+				<BrowserRouter>
+					<App />
+				</BrowserRouter>
+			</StatusContextProvider>
+		</WeatherContextProvider>
+	</LocationContextProvider>,
+	document.getElementById("root")
 );
 
 // If you want to start measuring performance in your app, pass a function

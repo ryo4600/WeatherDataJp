@@ -6,7 +6,7 @@ const HTTP_PORT = 9000;
 
 const db = require("./utils/db_handler");
 const {forwardGeocoding, reverseGeocoding} = require("./utils/geocode");
-const forecast = require("./utils/forecast");
+const {currentWeather, forecast} = require("./utils/forecast");
 
 const app = express();
 app.use(cors())
@@ -109,9 +109,21 @@ app.get("/placelookup", async (req, res) =>{
 //---------------------------------------------------------
 // GET: Get the weather forecast from latitude and longitude
 //---------------------------------------------------------
+app.get("/weather/forecast", async(req, res) => {
+	try {
+		const data = await forecast(req.query.areaName)
+		res.json(data)
+	} catch(err) {
+		return res.status(500).send("failed to get the forecast. " + err)
+	}
+})
+
+//---------------------------------------------------------
+// GET: Get the current weather from latitude and longitude
+//---------------------------------------------------------
 app.get("/weather/current", async(req, res) => {
 	try {
-		const data = await forecast(req.query.longitude, req.query.latitude, process.env.FORECAST_TOKEN)
+		const data = await currentWeather(req.query.longitude, req.query.latitude, process.env.FORECAST_TOKEN)
 		res.json(data)
 			// res.send({
 			// 	address: req.query.address,

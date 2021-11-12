@@ -1,11 +1,10 @@
 //import logo from "./logo.svg";
-import "bootswatch/dist/zephyr/bootstrap.min.css";
+import "bootswatch/dist/cosmo/bootstrap.min.css";
 import "./App.css";
 
 import React, { useContext } from "react";
 import "./css/my-local.css";
 
-import { Container } from "react-bootstrap";
 import { Route, Switch } from "react-router-dom";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
@@ -27,8 +26,8 @@ function App() {
 	return (
 		<React.Fragment>
 			<Header />
+			{errorMessage && <Message variant="danger">{errorMessage}</Message>}
 			<SelectLocation />
-
 			{isLoading && (
 				<LoadingSpinner
 					animation="border"
@@ -38,16 +37,14 @@ function App() {
 					className="mx-3"
 				/>
 			)}
-			{errorMessage && <Message variant="danger">{errorMessage}</Message>}
-
-			<Container className="container">
-				<Switch>
-					<Route path="/" component={HomeScreen} exact />
-					<Route path="/byday" component={ByDayScreen} />
-					<Route path="/byweek" component={ByWeekScreen} />
-					<Route path="/credit" component={CreditScreen} />
-				</Switch>
-			</Container>
+			<div className="pt-3">
+			<Switch>
+				<Route path="/byday" component={ByDayScreen} />
+				<Route path="/byweek" component={ByWeekScreen} />
+				<Route path="/credit" component={CreditScreen} />
+				<Route path="/" component={HomeScreen} />
+			</Switch>
+			</div>
 			<Footer />
 		</React.Fragment>
 	);

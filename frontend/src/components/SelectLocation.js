@@ -1,47 +1,45 @@
-import React, { useState, useContext, useEffect } from "react";
-import {
-	ButtonGroup,
-	Row,
-	ToggleButton,
-	Button,
-	Dropdown,
-	DropdownButton,
-} from "react-bootstrap";
+import React, { useState, useContext, useEffect, useRef } from "react";
+import { Accordion, Button, Dropdown, DropdownButton } from "react-bootstrap";
 
 import axios from "axios";
 
 import StatusContext from "../store/StatusContext";
+import LocationContext from "../store/LocationContext";
+
 import styles from "./SelectLocation.module.css";
-import { generateErrorMsg, getServerUrl, groupBy } from "../utils/commonTools";
+import {
+	generateErrorMsg,
+	getServerUrl,
+	latLonDistance,
+} from "../utils/commonTools";
+
+const distance = (place, station) => {
+	return latLonDistance(
+		place.latitude,
+		place.longitude,
+		station.latitude,
+		station.longitude
+	);
+};
 
 //-----------------------------------------------------------------------------
 // COMPONENT SELECT LOCATION
 //-----------------------------------------------------------------------------
 function SelectLocation() {
-	const {
-		location,
-		//setLocation,
-		setIsLoading,
-		SetLoadingMessage,
-		setErrorMessage,
-	} = useContext(StatusContext);
+	const { location, setLocation, station, setStation } =
+		useContext(LocationContext);
 
-	const radios = [
-		{ name: "自動", value: "1" },
-		{ name: "名前から", value: "2" },
-		{ name: "観測地点を選ぶ", value: "3" },
-	];
+	const { setIsLoading, SetLoadingMessage, setErrorMessage } =
+		useContext(StatusContext);
 
-	const [radioSelection, setRadioSelection] = useState(radios[0].value);
 	const [nameSelection, setNameSelection] = useState(undefined);
-
 	const [stations, setStations] = useState(undefined);
+	const txtSearch = useRef();
 
 	//--------------------------------------
 	// Get all stations
 	//--------------------------------------
 	const getStations = async () => {
-		console.log("get station started");
 		setIsLoading(true);
 		try {
 			const config = {
@@ -129,6 +127,57 @@ function SelectLocation() {
 		});
 	};
 
+	//--------------------------------------
+	// find location from name
+	//--------------------------------------
+	const findLocation = async () => {
+		setErrorMessage("");
+		setIsLoading(true);
+		try {
+			SetLoadingMessage("名称を検索中");
+
+			const config = {
+				headers: {
+					"Content-type": "application/json",
+				},
+			};
+
+			const { data, status } = await axios.get(
+				getServerUrl() +
+					`/geolocation?address=${txtSearch.current.value}`,
+				config
+			);
+
+			if (status !== 200) {
+				return setErrorMessage(
+					"場所名の取得でエラーが発生しました。コード：" + status
+				);
+			}
+			setNameSelection(data);
+		} catch (error) {
+			setErrorMessage(
+				"場所名の取得でエラーが発生しました。" + generateErrorMsg(error)
+			);
+		} finally {
+			setIsLoading(false);
+		}
+	};
+
+	//--------------------------------------
+	// Place is selected
+	//--------------------------------------
+	const onLocationSelected = (place) => {
+		setLocation(place);
+
+		const closest = stations.reduce((a, b) =>
+			distance(place, a) < distance(place, b) ? a : b
+		);
+		setStation(closest);
+	};
+
+	//--------------------------------------
+	// Initial loading
+	//--------------------------------------
 	useEffect(() => {
 		const f = async () => {
 			if (!stations) {
@@ -136,93 +185,78 @@ function SelectLocation() {
 			}
 		};
 		f();
-	}, []);
+	}, []); // eslint-disable-line react-hooks/exhaustive-deps
 
 	//--------------------------------------
 	// Rendering
 	//--------------------------------------
 	return (
-		<React.Fragment>
-			<h5 className="mx-3 mt-3">場所の選択</h5>
-			<div className={styles.root}>
-				<ButtonGroup>
-					{radios.map((radio, idx) => (
-						<ToggleButton
-							className="mx-1"
-							key={idx}
-							id={`radio-${idx}`}
-							type="radio"
-							name="location"
-							variant="outline-primary"
-							value={radio.value}
-							checked={radioSelection === radio.value}
-							onChange={(e) =>
-								setRadioSelection(e.currentTarget.value)
-							}
-						>
-							{radio.name}
-						</ToggleButton>
-					))}
-				</ButtonGroup>
-
-				{radioSelection === radios[0].value && (
-					<React.Fragment>
-						<Button
-							variant="success"
-							onClick={getLocation}
-							className="mx-3"
-						>
-							<i className="fas fa-map-marker-alt" />
-							<span> 現在地取得</span>
-						</Button>
-						{nameSelection && (
-							<DropdownButton
-								variant="outline-success"
-								id="dropdown-basic"
-								title="地点候補"
-							>
-								{nameSelection.map((place) => {
-									return (
-										<Dropdown.Item
-											href="#"
-											key={place.place_name}
-										>
-											{place.place_name}
-										</Dropdown.Item>
-									);
-								})}
-							</DropdownButton>
+		<Accordion defaultActiveKey="0">
+			<Accordion.Item eventKey="0">
+				<Accordion.Header>
+					{!location && <h6> 場所を選択してください</h6>}
+					{location && 
+					<h6 className="mx-3 mt-2">
+						{location && (
+							<span className="mx-3">{`場所：${location.name}, `}</span>
 						)}
-					</React.Fragment>
-				)}
-				{radioSelection === radios[1].value && <label>station</label>}
-				{radioSelection === radios[2].value && (
-					<DropdownButton
-						variant="success"
-						id="dropdown-basic"
-						title="観測所"
-					>
-						{stations.map((station) => {
-							return (<Dropdown.Item
-								href="#"
-								key={`area_${station.code}`}
+						{station && (
+							<span>{`最寄観測所：${station.name}`}</span>
+						)}
+					</h6>
+					}
+				</Accordion.Header>
+				<Accordion.Body>
+					<React.Fragment>
+						<div className={`${styles.inputArea} mt-0`}>
+							<input
+								type="text"
+								ref={txtSearch}
+								placeholder="地名や住所を入力してください"
+								className="mb-2"
+							></input>
+							<Button
+								variant="success"
+								onClick={findLocation}
+								className="mx-1 mb-2"
 							>
-								{station.name}
-							</Dropdown.Item>)
-						})}
-					</DropdownButton>
-				)}
-			</div>
-			<div>
-				{location && (
-					<Row>
-						<h5>
-							地点候補：<Dropdown></Dropdown>{" "}
-						</h5>
-					</Row>
-				)}
-			</div>
-		</React.Fragment>
+								<span>名前で検索</span>
+							</Button>
+							<Button
+								variant="success"
+								onClick={getLocation}
+								className="mx-3 mb-2"
+							>
+								<i className="fas fa-map-marker-alt" />
+								<span> 現在地取得</span>
+							</Button>
+							{nameSelection && (
+								<DropdownButton
+									variant="outline-success"
+									id="dropdown-basic"
+									title={`地点候補：${nameSelection.length} 件`}
+									className="mb-2 mx-3"
+								>
+									{nameSelection.map((place, idx) => {
+										return (
+											<Dropdown.Item
+												href="#"
+												key={`place_${idx}`}
+												onClick={() => {
+													onLocationSelected(place);
+												}}
+											>
+												{place.name}
+											</Dropdown.Item>
+										);
+									})}
+								</DropdownButton>
+							)}
+						</div>
+					</React.Fragment>
+				</Accordion.Body>
+			</Accordion.Item>
+		</Accordion>
 	);
 }
 
