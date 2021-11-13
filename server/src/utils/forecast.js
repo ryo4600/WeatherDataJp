@@ -69,6 +69,10 @@ const findOffice = (area_name) => {
 const parse3daysForcast = (data) => {
 	let retVals = [];
 
+	if(!data) {
+		return retVals
+	}
+
 	// name, code, weather and winds
 	data[0].areas.map((areaRoot) => {
 		let val = { name: areaRoot.area.name, code: areaRoot.area.code };
@@ -138,6 +142,10 @@ const parse3daysForcast = (data) => {
 const parse7daysForcast = (data) => {
 	let retVals = [];
 
+	if(!data) {
+		return retVals
+	}
+
 	// name, code, rain, reliability
 	data[0].areas.map((areaRoot) => {
 		let val = { name: areaRoot.area.name, code: areaRoot.area.code };
@@ -179,10 +187,16 @@ const parse7daysForcast = (data) => {
 // weather forecast
 //--------------------------------------
 const forecast = async (area_name) => {
+
 	const office = findOffice(area_name);
 
+	// fails first time when starting from compiled client
+	if( office.length === 0) {
+		return
+	}
+
 	const url = `https://www.jma.go.jp/bosai/forecast/data/forecast/${office[0]}.json`;
-	console.log(url)
+
 	return new Promise((resolve, reject) => {
 		request({ url, json: true }, (error, { body }) => {
 			if (error) {
@@ -192,6 +206,7 @@ const forecast = async (area_name) => {
 					"unable to find location. " + JSON.stringify(body.error)
 				);
 			}
+	
 			const days3 = parse3daysForcast(body[0].timeSeries)
 			const days7 = parse7daysForcast(body[1].timeSeries)
 

@@ -76,8 +76,8 @@ function Forecast3Days({ station, days3 }) {
 											<Table borderless>
 												<tbody>
 													<tr>
-														<td>AM</td>
-														<td>PM</td>
+														<td>日中の最高</td>
+														<td>朝の最低</td>
 													</tr>
 													<tr>
 														{dayData.temperatures.map(

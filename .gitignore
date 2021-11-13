@@ -110,3 +110,4 @@ server/src/data
 frontend/package-lock.json
 server/config/dev.env
 *.env
+server/public
