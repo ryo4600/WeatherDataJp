@@ -136,6 +136,13 @@ app.get("/weather/current", async(req, res) => {
 	}
 })
 
+//---------------------------------------------------------
+// Need this route for heroku deployment
+//---------------------------------------------------------
+app.get('*', (req, res)=> {
+	res.sendFile(path.join(__dirname, '../public', 'index.html'));
+});
+
 app.listen(HTTP_PORT, () => {
 	console.log(`Server is up on port ${HTTP_PORT}.`);
 });

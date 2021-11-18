@@ -27,7 +27,7 @@ function Header(props) {
 					<Navbar.Toggle aria-controls="responsive-navbar-nav" />
 					<Navbar.Collapse>
 						<Nav className={`mr-auto ${styles.menuItems}`}>
-							<LinkContainer to="/home">
+							<LinkContainer to="/">
 								<Nav.Link> ホーム </Nav.Link>
 							</LinkContainer>
 							<LinkContainer to="/byday">
