@@ -2,7 +2,8 @@ const path = require("path");
 const express = require("express");
 const cors = require('cors')
 
-const HTTP_PORT = process.env.PORT || 9000
+const getPort = () => process.env.PORT || 9000
+const HTTP_PORT = getPort()
 
 const db = require("./utils/db_handler");
 const {forwardGeocoding, reverseGeocoding} = require("./utils/geocode");
