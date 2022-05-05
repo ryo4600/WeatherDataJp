@@ -1,21 +1,20 @@
-import React, {useContext} from "react";
+import React from "react";
 import { Container } from "react-bootstrap";
 
 import configData from "../config.json";
-import Forecast from "../components/Forecast";
-import LocationContext from "../store/LocationContext";
+// import Forecast from "../components/Forecast";
+import NormalDays from '../components/NormalDays'
 
 //-----------------------------------------------------------------------------
 // SCREEN: Home
 //-----------------------------------------------------------------------------
 function HomeScreen() {
-	const { station } = useContext(LocationContext);
-
 	document.title = `${configData.TITLE}（ホーム)`;
 
 	return (
 		<Container>
-			<Forecast station={station} />
+			{/* <Forecast station={station} /> */}
+			<NormalDays />
 		</Container>
 	);
 }

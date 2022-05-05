@@ -1,4 +1,4 @@
-import configData from "../config.json";
+import configData from '../config.json';
 
 export const generateErrorMsg = (error) => {
 	return error.response && error.response.data.message
@@ -18,12 +18,15 @@ export const groupBy = (items, key) => {
 		}),
 		{}
 	);
-	console.log("items", items);
+	console.log('items', items);
 	return items;
 };
 
 const R = Math.PI / 180;
 
+//--------------------------------------
+// Calc distance between 2 points defined in latitude and longitude 
+//--------------------------------------
 export const latLonDistance = (lat1, lng1, lat2, lng2) => {
 	lat1 *= R;
 	lng1 *= R;
@@ -37,3 +40,53 @@ export const latLonDistance = (lat1, lng1, lat2, lng2) => {
 		)
 	);
 };
+
+//--------------------------------------
+// Calc average from an array
+//--------------------------------------
+export const calcAverage = (data) => {
+	if (!data) return ' - ';
+	let count = 1;
+	const sum = data.reduce(function (prevVal, currentVal) {
+		if (!prevVal) return currentVal;
+		++count;
+		return prevVal + currentVal;
+	}, 0);
+	return sum / count;
+};
+
+//--------------------------------------
+// Find max and its' index from an array
+//--------------------------------------
+export const findMax = (data) => {
+	if (!data) return [undefined, -1];
+
+	let index = -1;
+	const max = data.reduce( (prev, current, i) => {
+		if (!prev || prev < current) {
+			index = i;
+			return current;
+		}
+		return prev;
+	}, undefined)
+
+	return [max, index];
+}
+
+//--------------------------------------
+// Find min and its' index from an array
+//--------------------------------------
+export const findMin = (data) => {
+	if (!data) return [undefined, -1];
+
+	let index = -1;
+	const max = data.reduce( (prev, current, i) => {
+		if (!prev || prev > current) {
+			index = i;
+			return current;
+		}
+		return prev;
+	}, undefined)
+
+	return [max, index];
+}

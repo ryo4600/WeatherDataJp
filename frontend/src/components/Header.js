@@ -1,19 +1,13 @@
-import React from "react";
-import {
-	Navbar,
-	Nav,
-	Container,
-} from "react-bootstrap";
-import { LinkContainer } from "react-router-bootstrap";
+import { Navbar, Nav, Container } from 'react-bootstrap';
+import { LinkContainer } from 'react-router-bootstrap';
 
-import configData from '../config.json'
-import styles from './Header.module.css'
+import configData from '../config.json';
+import styles from './Header.module.css';
 
 //-----------------------------------------------------------------------------
 // COMPONENT HEADER
 //-----------------------------------------------------------------------------
 function Header(props) {
-
 	//--------------------------------------
 	// Rendering
 	//--------------------------------------
@@ -31,19 +25,19 @@ function Header(props) {
 								<Nav.Link> ホーム </Nav.Link>
 							</LinkContainer>
 							<LinkContainer to="/byday">
-								<Nav.Link> 日データ </Nav.Link>
+								<Nav.Link> 日の詳細 </Nav.Link>
 							</LinkContainer>
 							<LinkContainer to="/byweek">
-								<Nav.Link> 週データ </Nav.Link>
+								<Nav.Link> 週の詳細 </Nav.Link>
 							</LinkContainer>
-							<LinkContainer to="/credit">
+							{/* <LinkContainer to="/credit">
 								<Nav.Link> データについて </Nav.Link>
-							</LinkContainer>
+							</LinkContainer> */}
 						</Nav>
 						<Nav>
 							<LinkContainer to="/login">
 								<Nav.Link disabled>
-									<i className="fas fa-user"></i>{" "}
+									<i className="fas fa-user"></i>
 									<span className="mx-2">Login </span>
 								</Nav.Link>
 							</LinkContainer>

@@ -7,6 +7,8 @@ const LocationContext = React.createContext({
 	setStation: (station) => {},
 	currentDate: new Date(),
 	selectDate: (date) => {},
+	isSelecting: false,
+	setIsSelecting: (selecting) => {}
 });
 
 export default LocationContext;
@@ -62,6 +64,7 @@ export const LocationContextProvider = (props) => {
 	const [location, setLocation] = useState (storedData.location)
 	const [station, setStation] = useState(storedData.station)
 	const [date, setDate] = useState(initialDate);
+	const [isSelecting, setIsSelecting] = useState(false);
 
 	const locationSelectedHandler = (loc) => {
 		setLocation(loc)
@@ -85,6 +88,8 @@ export const LocationContextProvider = (props) => {
 		setStation: stationSelectedHandler,
 		currentDate: date,
 		selectDate: selectDateHandler,
+		isSelecting,
+		setIsSelecting
 	};
 
 	return (
