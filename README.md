@@ -6,7 +6,7 @@
 
 ## 開発環境 
 build memo  
-frontend config.jsonを空にしてnpm run buildを実行する
+frontend config.jsonのSERVER_URLを空にしてnpm run buildを実行する
 
 $ heroku config:add TZ=Asia/Tokyo
 
