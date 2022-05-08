@@ -18,7 +18,7 @@ const getStations = async () => {
 // Get past weather data of a station for the day
 //---------------------------------------------------------
 const getDataByDay = async (station_code, year, month, day,	years) => {
-	const query = `SELECT * FROM weatherData WHERE station_code=${station_code} AND year <= ${year} AND year >=${
+	const query = `SELECT * FROM weatherData WHERE station_code=${station_code} AND year < ${year} AND year >=${
 		year - years
 	} AND month=${month} AND day=${day} ORDER BY year DESC`;
 	return await db_all(query);

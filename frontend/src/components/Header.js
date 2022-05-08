@@ -20,8 +20,8 @@ function Header(props) {
 					</LinkContainer>
 					<Navbar.Toggle aria-controls="responsive-navbar-nav" />
 					<Navbar.Collapse>
-						<Nav className={`mr-auto ${styles.menuItems}`}>
-							<LinkContainer to="/">
+						<Nav className={`me-auto ${styles.menuItems}`}>
+							<LinkContainer to="/home">
 								<Nav.Link> ホーム </Nav.Link>
 							</LinkContainer>
 							<LinkContainer to="/byday">

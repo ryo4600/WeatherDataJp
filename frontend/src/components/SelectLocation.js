@@ -1,17 +1,17 @@
-import React, { useState, useContext, useEffect, useRef } from "react";
-import { Accordion, Button, Dropdown, DropdownButton } from "react-bootstrap";
+import React, { useState, useEffect, useRef } from 'react';
+import { Button, ListGroup } from 'react-bootstrap';
 
-import axios from "axios";
+import axios from 'axios';
 
-import StatusContext from "../store/StatusContext";
-import LocationContext from "../store/LocationContext";
-
-import styles from "./SelectLocation.module.css";
+import Message from './Message';
+import LoadingSpinner from './LoadingSpinner';
+import styles from './SelectLocation.module.css';
 import {
 	generateErrorMsg,
 	getServerUrl,
 	latLonDistance,
-} from "../utils/commonTools";
+} from '../utils/commonTools';
+import LocationText from './parts/LocationText';
 
 const distance = (place, station) => {
 	return latLonDistance(
@@ -25,16 +25,15 @@ const distance = (place, station) => {
 //-----------------------------------------------------------------------------
 // COMPONENT SELECT LOCATION
 //-----------------------------------------------------------------------------
-function SelectLocation() {
-	const { location, setLocation, station, setStation } =
-		useContext(LocationContext);
-
-	const { setIsLoading, SetLoadingMessage, setErrorMessage } =
-		useContext(StatusContext);
-
+function SelectLocation({ location, station, locationSelected }) {
+	const [isLoading, setIsLoading] = useState(false);
+	const [loadingMessage, setLoadingMessage] = useState(undefined);
+	const [errorMessage, setErrorMessage] = useState(undefined);
 	const [nameSelection, setNameSelection] = useState(undefined);
 	const [stations, setStations] = useState(undefined);
-	const txtSearch = useRef();
+	const [selectedLocation, setSelectedLocation] = useState();
+
+	const txtToSearch = useRef();
 
 	//--------------------------------------
 	// Get all stations
@@ -44,7 +43,7 @@ function SelectLocation() {
 		try {
 			const config = {
 				headers: {
-					"Content-type": "application/json",
+					'Content-type': 'application/json',
 				},
 			};
 
@@ -55,13 +54,13 @@ function SelectLocation() {
 
 			if (status !== 200) {
 				return setErrorMessage(
-					"観測所一覧の取得でエラーが発生しました。コード：" + status
+					'観測所一覧の取得でエラーが発生しました。コード：' + status
 				);
 			}
 			setStations(data);
 		} catch (error) {
 			setErrorMessage(
-				"観測所一覧の取得でエラーが発生しました。" +
+				'観測所一覧の取得でエラーが発生しました。' +
 					generateErrorMsg(error)
 			);
 		} finally {
@@ -74,11 +73,14 @@ function SelectLocation() {
 	//--------------------------------------
 	const getLocationName = async (latitude, longitude) => {
 		try {
-			SetLoadingMessage("名称を取得中");
+			setSelectedLocation(null);
+			setNameSelection(null);
+
+			setLoadingMessage('名称を取得中');
 
 			const config = {
 				headers: {
-					"Content-type": "application/json",
+					'Content-type': 'application/json',
 					//Authorization: `Bearer ${token}`,
 				},
 			};
@@ -91,13 +93,13 @@ function SelectLocation() {
 
 			if (status !== 200) {
 				return setErrorMessage(
-					"場所名の取得でエラーが発生しました。コード：" + status
+					'場所名の取得でエラーが発生しました。コード：' + status
 				);
 			}
 			setNameSelection(data);
 		} catch (error) {
 			setErrorMessage(
-				"場所名の取得でエラーが発生しました。" + generateErrorMsg(error)
+				'場所名の取得でエラーが発生しました。' + generateErrorMsg(error)
 			);
 		} finally {
 			setIsLoading(false);
@@ -108,16 +110,18 @@ function SelectLocation() {
 	// Get user's location
 	//--------------------------------------
 	const getLocation = () => {
-		setErrorMessage("");
+		setErrorMessage('');
 
 		if (!navigator.geolocation) {
 			return setErrorMessage(
-				"お使いの環境では位置情報の取得ができません"
+				'お使いの環境では位置情報の取得ができません'
 			);
 		}
 
+		setSelectedLocation(null);
+		setNameSelection(null);
 		setIsLoading(true);
-		SetLoadingMessage("現在地を取得中");
+		setLoadingMessage('現在地を取得中');
 
 		navigator.geolocation.getCurrentPosition((position) => {
 			getLocationName(
@@ -131,32 +135,32 @@ function SelectLocation() {
 	// find location from name
 	//--------------------------------------
 	const findLocation = async () => {
-		setErrorMessage("");
+		setErrorMessage('');
 		setIsLoading(true);
 		try {
-			SetLoadingMessage("名称を検索中");
+			setLoadingMessage('名称を検索中');
 
 			const config = {
 				headers: {
-					"Content-type": "application/json",
+					'Content-type': 'application/json',
 				},
 			};
 
 			const { data, status } = await axios.get(
 				getServerUrl() +
-					`/geolocation?address=${txtSearch.current.value}`,
+					`/geolocation?address=${txtToSearch.current.value}`,
 				config
 			);
 
 			if (status !== 200) {
 				return setErrorMessage(
-					"場所名の取得でエラーが発生しました。コード：" + status
+					'場所名の取得でエラーが発生しました。コード：' + status
 				);
 			}
 			setNameSelection(data);
 		} catch (error) {
 			setErrorMessage(
-				"場所名の取得でエラーが発生しました。" + generateErrorMsg(error)
+				'場所名の取得でエラーが発生しました。' + generateErrorMsg(error)
 			);
 		} finally {
 			setIsLoading(false);
@@ -164,15 +168,38 @@ function SelectLocation() {
 	};
 
 	//--------------------------------------
+	// Make the place name shorter
+	//--------------------------------------
+	const trimLocationName = (name, keyword) => {
+		const addresses = name.split(',');
+		// obtained location name can be very long, so make it short.
+		// ex. Japan, Yokohama, Kohoku-ku 2-11-4  -> Japan, Yokohama
+		let trimedName = '';
+		for (var address of addresses) {
+			trimedName += address.trim();
+			if (address.includes(keyword)) {
+				break;
+			}
+			trimedName += ',';
+		}
+		return trimedName;
+	};
+
+	//--------------------------------------
 	// Place is selected
 	//--------------------------------------
-	const onLocationSelected = (place) => {
-		setLocation(place);
-
-		const closest = stations.reduce((a, b) =>
-			distance(place, a) < distance(place, b) ? a : b
+	const onOk = () => {
+		const location = selectedLocation;
+		if (txtToSearch.current.value.length > 0) {
+			location.name = trimLocationName(
+				location.name,
+				txtToSearch.current.value
+			);
+		}
+		const station = stations.reduce((a, b) =>
+			distance(location, a) < distance(location, b) ? a : b
 		);
-		setStation(closest);
+		locationSelected(location, station);
 	};
 
 	//--------------------------------------
@@ -191,72 +218,73 @@ function SelectLocation() {
 	// Rendering
 	//--------------------------------------
 	return (
-		<Accordion defaultActiveKey="0">
-			<Accordion.Item eventKey="0">
-				<Accordion.Header>
-					{!location && <h6> 場所を選択してください</h6>}
-					{location && 
-					<h6 className="mx-3 mt-2">
-						{location && (
-							<span className="mx-3">{`場所：${location.name}, `}</span>
-						)}
-						{station && (
-							<span>{`最寄観測所：${station.name}`}</span>
-						)}
-					</h6>
-					}
-				</Accordion.Header>
-				<Accordion.Body>
-					<React.Fragment>
-						<div className={`${styles.inputArea} mt-0`}>
-							<input
-								type="text"
-								ref={txtSearch}
-								placeholder="地名や住所を入力してください"
-								className="mb-2"
-							></input>
-							<Button
-								variant="success"
-								onClick={findLocation}
-								className="mx-1 mb-2"
-							>
-								<span>名前で検索</span>
-							</Button>
-							<Button
-								variant="success"
-								onClick={getLocation}
-								className="mx-3 mb-2"
-							>
-								<i className="fas fa-map-marker-alt" />
-								<span> 現在地取得</span>
-							</Button>
-							{nameSelection && (
-								<DropdownButton
-									variant="outline-success"
-									id="dropdown-basic"
-									title={`地点候補：${nameSelection.length} 件`}
-									className="mb-2 mx-3"
+		<div>
+			<span>現在の設定</span>
+			<LocationText
+				location={location}
+				station={station}
+				className="ms-2"
+			/>
+			<div className={`${styles.inputArea} px-0 my-2`}>
+				<input
+					type="text"
+					ref={txtToSearch}
+					placeholder="地名や住所を入力してください"
+					className="flex-fill px-2"
+				></input>
+				<Button
+					variant="success"
+					onClick={findLocation}
+					className="ms-1"
+				>
+					<span>名前で検索</span>
+				</Button>
+				<span className="mx-1 center-text">または</span>
+				<Button variant="success" onClick={getLocation}>
+					<i className="fas fa-map-marker-alt" />
+					<span> 現在地取得</span>
+				</Button>
+			</div>
+			{errorMessage && <Message variant="danger">{errorMessage}</Message>}
+			{isLoading && (
+				<LoadingSpinner
+					animation="border"
+					variant="primary"
+					size="sm"
+					message={loadingMessage}
+					className="mx-3"
+				/>
+			)}
+			{nameSelection && (
+				<>
+					<ListGroup>
+						{nameSelection.map((place, idx) => {
+							return (
+								<ListGroup.Item
+									className="list-group-item"
+									href="#"
+									key={`place_${idx}`}
+									onClick={() => {
+										setSelectedLocation(place);
+									}}
+									active={selectedLocation === place}
 								>
-									{nameSelection.map((place, idx) => {
-										return (
-											<Dropdown.Item
-												href="#"
-												key={`place_${idx}`}
-												onClick={() => {
-													onLocationSelected(place);
-												}}
-											>
-												{place.name}
-											</Dropdown.Item>
-										);
-									})}
-								</DropdownButton>
-							)}
-						</div>
-					</React.Fragment>
-				</Accordion.Body>
-			</Accordion.Item>
-		</Accordion>
+									{place.name}
+								</ListGroup.Item>
+							);
+						})}
+					</ListGroup>
+					<Button
+						variant="success"
+						onClick={onOk}
+						className="mt-2"
+						disabled={!selectedLocation}
+					>
+						<span>決定</span>
+					</Button>
+				</>
+			)}
+		</div>
 	);
 }
 

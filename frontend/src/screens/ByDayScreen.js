@@ -1,17 +1,16 @@
 import React, { useState, useEffect, useContext } from "react";
-import { Container, Form } from "react-bootstrap";
+import { Container } from "react-bootstrap";
 
 import axios from "axios";
 
-import DatePicker from "react-datepicker";
-import "react-datepicker/dist/react-datepicker.css";
-
+import DateAndPeriodInput from '../components/parts/DateAndPeriodInput';
 import configData from "../config.json";
 import LocationContext from "../store/LocationContext";
 import StatusContext from '../store/StatusContext'
 import ByDayDetail from "../components/ByDayDetail";
 import ByDaySummary from "../components/ByDaySummary";
 import { getServerUrl, generateErrorMsg } from "../utils/commonTools";
+import EditableLocationText from "../components/parts/EditableLocationText";
 
 //-----------------------------------------------------------------------------
 // SCREEN: By Day
@@ -67,35 +66,14 @@ function ByDayScreen() {
 
 	return (
 		<Container>
-			<div className="flex-wrap my-2">
-				<div className="flex-wrap">
-					<DatePicker
-						className="py-1 px-1"
-						dateFormat="MM 月 dd 日"
-						selected={date}
-						onChange={handleDateChange}
-					/>
-				</div>
-				<span className="mx-3 center-text"> の過去</span>
-				<div className="flex-wrap">
-					<Form.Control
-						as="select"
-						value={years}
-						onChange={(e) => handleYearsChange(e.target.value)}
-					>
-						<option key="10" value="10">
-							10年
-						</option>
-						<option key="20" value="20">
-							20年
-						</option>
-						<option key="50" value="50">
-							全て
-						</option>
-					</Form.Control>
-				</div>
-				<span className="mx-3 center-text"> を見る</span>
-			</div>
+			<EditableLocationText />
+			<DateAndPeriodInput
+				date={date}
+				years={years}
+				handleDateChange={handleDateChange}
+				handleYearsChange={handleYearsChange}
+			/>
+			<hr />
 			{byDayData && (
 				<div>
 					<h3>観測地点：{station.name}</h3>
