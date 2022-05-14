@@ -10,14 +10,14 @@ import {
 	findMax,
 	findMin,
 } from '../utils/commonTools';
-import styles from './NormalDay.module.css'
+import styles from './NormalDay.module.css';
 
 function NormalDay({ station, date, years }) {
-	const { setIsLoading, SetLoadingMessage, setErrorMessage } =
+	const { setIsLoading, setLoadingMessage, setErrorMessage } =
 		useContext(StatusContext);
 
-	//const [byDayData, setByDayData] = useState(undefined);
-	const [avgTemp, setAvgTemp] = useState(0);
+	const [avgHigh, setAvgHigh] = useState(0);
+	const [avgLow, setAvgLow] = useState(0);
 	const [highest, setHighest] = useState();
 	const [highestYear, setHighestYear] = useState();
 	const [lowest, setLowest] = useState();
@@ -31,7 +31,8 @@ function NormalDay({ station, date, years }) {
 		}
 		try {
 			setIsLoading(true);
-			SetLoadingMessage(`${dt}のデータ取得中`);
+			setErrorMessage('');
+			setLoadingMessage(`${dt}のデータ取得中`);
 			const { data } = await axios.get(
 				`${getServerUrl()}/weather/byday/${station.code}` +
 					`?year=${date.getFullYear()}&month=${date.getMonth() + 1}` +
@@ -39,16 +40,18 @@ function NormalDay({ station, date, years }) {
 			);
 
 			// Update display values
-			setAvgTemp(calcAverage(data.map((val) => val.temp_avg)));
-			const [highest, idxHigh] = findMax(data.map(val => val.temp_high))
+			setAvgHigh(calcAverage(data.map((val) => val.temp_high)));
+			setAvgLow(calcAverage(data.map((val) => val.temp_low)));
+			const [highest, idxHigh] = findMax(
+				data.map((val) => val.temp_high)
+			);
 			setHighest(highest);
-			setHighestYear(data.at(idxHigh).year)
+			setHighestYear(data.at(idxHigh).year);
 			const [lowest, idexLow] = findMin(data.map((val) => val.temp_low));
 			setLowest(lowest);
 			setLowestYear(data.at(idexLow).year);
-			setNumRain(data.filter(val => val.rain_total >= 0).length)
+			setNumRain(data.filter((val) => val.rain_total >= 0).length);
 			setNumSnow(data.filter((val) => val.snow_total >= 0).length);
-
 		} catch (error) {
 			setErrorMessage(
 				'過去のデータ取得でエラーが発生しました。' +
@@ -72,43 +75,55 @@ function NormalDay({ station, date, years }) {
 	return (
 		<Card className={`my-1 p-2 rounded`}>
 			<div className="mb-2">
-				<span className="h3">{station.name}</span>
+				<span className="h2">{station.name}</span>
 				<span className="mx-2">
-					の{date.getMonth() + 1}月 {date.getDate()}日の過去{years}
+					での{date.getMonth() + 1}月 {date.getDate()}日の過去
+					{years}
 					年は...
 				</span>
 			</div>
 			<span>
-				平均気温は{' '}
+				平均最高気温
 				<span className={`h3 ${styles.dataText}`}>
-					{avgTemp.toFixed(1)}
-				</span>{' '}
-				℃でした。
+					{avgHigh.toFixed(1)}
+				</span>
+				℃、 平均最低気温
+				<span className={`h3 ${styles.dataText}`}>
+					{avgLow.toFixed(1)}
+				</span>
+				℃、
 			</span>
 			<span>
-				最も気温が高たったのは
+				最も暑かったのは
 				<span className={`h3 ${styles.dataText}`}>{highestYear}</span>
 				年の
-				<span className={`h3 ${styles.dataText}`}>{highest}</span>
-				℃でした。
+				<span className={`h3 ${styles.dataText}`}>{highest}</span>℃、
 			</span>
 			<span>
-				最も気温が低かったのは
+				最も寒かったのは
 				<span className={`h3 ${styles.dataText}`}>{lowestYear}</span>
 				年の
 				<span className={`h3 ${styles.dataText}`}>{lowest}</span>
 				℃でした。
 			</span>
-			<span>
-				雨が観測された日は
-				<span className={`h3 ${styles.dataText}`}>{numRain}</span>
-				日ありました。
-			</span>
-			<span>
-				雪が観測された日は
-				<span className={`h3 ${styles.dataText}`}>{numSnow}</span>
-				日ありました。
-			</span>
+			{numRain > 0 ? (
+				<span>
+					雨が観測された日は
+					<span className={`h3 ${styles.dataText}`}>{numRain}</span>
+					日ありました。
+				</span>
+			) : (
+				<span className="mt-2">雨は観測されませんでした。</span>
+			)}
+			{numSnow > 0 ? (
+				<span>
+					雪が観測された日は
+					<span className={`h3 ${styles.dataText}`}>{numSnow}</span>
+					日ありました。
+				</span>
+			) : (
+				<span className="mt-2">雪は観測されませんでした。</span>
+			)}
 		</Card>
 	);
 }

@@ -23,7 +23,7 @@ function ByWeekScreen() {
 	const [years, setYears] = useState(10);
 	const [byWeekData, setByWeekData] = useState(undefined);
 	const { station } = useContext(LocationContext);
-	const { setIsLoading, SetLoadingMessage, setErrorMessage } = useContext(StatusContext);
+	const { setIsLoading, setLoadingMessage, setErrorMessage } = useContext(StatusContext);
 
 	const handleYearsChange = (value) => {
 		setYears(value);
@@ -42,7 +42,8 @@ function ByWeekScreen() {
 
 		try {
 			setIsLoading(true);
-			SetLoadingMessage(`${dt}のデータ取得中`);
+			setErrorMessage('');
+			setLoadingMessage(`${dt}のデータ取得中`);
 			const { data } = await axios.get(
 				`${getServerUrl()}/weather/byweek/${station.code}` +
 					`?year=${date.getFullYear()}&month=${date.getMonth() + 1}` +

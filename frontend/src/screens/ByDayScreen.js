@@ -20,7 +20,7 @@ function ByDayScreen() {
 	const [years, setYears] = useState(10);
 	const [byDayData, setByDayData] = useState(undefined);
 	const { station } = useContext(LocationContext);
-	const { setIsLoading, SetLoadingMessage, setErrorMessage } =
+	const { setIsLoading, setLoadingMessage, setErrorMessage } =
 		useContext(StatusContext);
 
 	const handleYearsChange = (value) => {
@@ -39,7 +39,8 @@ function ByDayScreen() {
 		}
 		try {
 			setIsLoading(true);
-			SetLoadingMessage(`${dt}のデータ取得中`)
+			setErrorMessage('');
+			setLoadingMessage(`${dt}のデータ取得中`)
 			const { data } = await axios.get(
 				`${getServerUrl()}/weather/byday/${	station.code}` +
 				`?year=${date.getFullYear()}&month=${date.getMonth() + 1}` +

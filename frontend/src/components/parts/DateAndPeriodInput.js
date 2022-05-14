@@ -1,4 +1,4 @@
-import { Form } from 'react-bootstrap';
+import { Form, Button } from 'react-bootstrap';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 
@@ -8,6 +8,12 @@ function DateAndPeriodInput({
 	years,
 	handleYearsChange,
 }) {
+	const addDays = (days) => {
+		var dt = new Date(date)
+		dt.setDate(dt.getDate() + days);
+		handleDateChange(dt);
+	}
+
 	return (
 		<div className="flex-wrap my-2">
 			<span className="me-3 center-text">日付</span>
@@ -36,6 +42,33 @@ function DateAndPeriodInput({
 						全て
 					</option>
 				</Form.Control>
+			</div>
+			<div>
+				<Button
+					type="button"
+					className="ms-3 btn btn-outline-primary"
+					variant="transparent"
+					onClick={() => addDays(-1)}
+				>
+					<i className="fas fa-angle-left"></i>
+				</Button>
+				<Button
+					type="button"
+					className="mx-1 btn btn-outline-primary"
+					variant="transparent"
+					onClick={() => handleDateChange(new Date())}
+				>
+					<i className="fas fa-calendar-day me-1"></i>
+					<span>今日</span>
+				</Button>
+				<Button
+					type="button"
+					className="btn btn-outline-primary"
+					variant="transparent"
+					onClick={() => addDays(1)}
+				>
+					<i className="fas fa-angle-right"></i>
+				</Button>
 			</div>
 		</div>
 	);

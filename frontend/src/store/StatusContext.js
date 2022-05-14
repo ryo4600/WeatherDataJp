@@ -2,7 +2,7 @@ import React, { useState } from "react";
 
 const StatusContext = React.createContext({
 	loadingMessage: "",
-	SetLoadingMessage: (message) => {},
+	setLoadingMessage: (message) => {},
 	errorMessage: "",
 	setErrorMessage: (message) => {},
 });
@@ -14,14 +14,14 @@ export default StatusContext;
 ///////////////////////////////////////////////////////////
 export const StatusContextProvider = (props) => {
 	const [isLoading, setIsLoading] = useState(false);
-	const [loadingMessage, SetLoadingMessage] = useState("");
+	const [loadingMessage, setLoadingMessage] = useState("");
 	const [errorMessage, setErrorMessage] = useState("");
 
 	const contextValue = {
 		isLoading,
 		setIsLoading,
 		loadingMessage,
-		SetLoadingMessage,
+		setLoadingMessage,
 		errorMessage,
 		setErrorMessage,
 	};

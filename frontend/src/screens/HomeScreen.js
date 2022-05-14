@@ -15,12 +15,10 @@ function HomeScreen() {
 
 	const handleYearsChange = (value) => {
 		setYears(value);
-		//stations.forEach((st)=>st.execGetData(date, value))
 	};
 
 	const handleDateChange = (value) => {
 		setDate(value);
-		//stations.forEach((st) => st.execGetData(value, years));
 	};
 
 	useEffect(() => {

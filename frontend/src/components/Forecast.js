@@ -9,7 +9,7 @@ import Forecast3Days from './Forecast3Days'
 import Forecast7Days from './Forecast7Days'
 
 function Forecast({ station, show3days = true, show7days = true }) {
-	const { setIsLoading, setErrorMessage, SetLoadingMessage } =
+	const { setIsLoading, setErrorMessage, setLoadingMessage } =
 		useContext(StatusContext);
 	const { SetWeekForecast } = useContext(WeatherContext)
 
@@ -25,7 +25,8 @@ function Forecast({ station, show3days = true, show7days = true }) {
 			return
 		}
 		setIsLoading(true);
-		SetLoadingMessage("天気予報データの取得中");
+		setErrorMessage('');
+		setLoadingMessage("天気予報データの取得中");
 		try {
 			const config = {
 				headers: {

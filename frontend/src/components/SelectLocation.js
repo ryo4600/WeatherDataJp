@@ -40,6 +40,8 @@ function SelectLocation({ location, station, locationSelected }) {
 	//--------------------------------------
 	const getStations = async () => {
 		setIsLoading(true);
+		setErrorMessage('');
+		setLoadingMessage('観測所一覧の取得中')
 		try {
 			const config = {
 				headers: {
@@ -75,7 +77,7 @@ function SelectLocation({ location, station, locationSelected }) {
 		try {
 			setSelectedLocation(null);
 			setNameSelection(null);
-
+			setErrorMessage('');
 			setLoadingMessage('名称を取得中');
 
 			const config = {
@@ -121,6 +123,7 @@ function SelectLocation({ location, station, locationSelected }) {
 		setSelectedLocation(null);
 		setNameSelection(null);
 		setIsLoading(true);
+		setErrorMessage('');
 		setLoadingMessage('現在地を取得中');
 
 		navigator.geolocation.getCurrentPosition((position) => {
@@ -138,6 +141,7 @@ function SelectLocation({ location, station, locationSelected }) {
 		setErrorMessage('');
 		setIsLoading(true);
 		try {
+			setErrorMessage('');
 			setLoadingMessage('名称を検索中');
 
 			const config = {

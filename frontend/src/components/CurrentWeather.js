@@ -8,7 +8,7 @@ import { generateErrorMsg, getServerUrl } from "../utils/commonTools";
 
 
 function CurrentWeather({location}) {
-	const { setIsLoading, setErrorMessage, SetLoadingMessage } =
+	const { setIsLoading, setErrorMessage, setLoadingMessage } =
 		useContext(StatusContext);
 
 	const [weather, setWeather] = useState();
@@ -18,7 +18,8 @@ function CurrentWeather({location}) {
 	//--------------------------------------
 	const getWeather = async () => {
 		setIsLoading(true);
-		SetLoadingMessage("現在の天気情報の取得中");
+		setErrorMessage('');
+		setLoadingMessage("現在の天気情報の取得中");
 		try {
 			const config = {
 				headers: {

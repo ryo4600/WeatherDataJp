@@ -35,18 +35,19 @@ function App() {
 						<Route path="/" component={HomeScreen} />
 					</Switch>
 				</div>
+				{errorMessage && (
+					<Message variant="danger">{errorMessage}</Message>
+				)}
+				{isLoading && (
+					<LoadingSpinner
+						animation="border"
+						variant="primary"
+						size="sm"
+						message={loadingMessage}
+						className="ms-3 mt-3"
+					/>
+				)}
 			</Container>
-			
-			{errorMessage && <Message variant="danger">{errorMessage}</Message>}
-			{isLoading && (
-				<LoadingSpinner
-					animation="border"
-					variant="primary"
-					size="sm"
-					message={loadingMessage}
-					className="mx-3"
-				/>
-			)}
 			<Footer />
 		</>
 	);
